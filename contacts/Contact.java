@@ -1,5 +1,7 @@
 package contacts;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Objects;
 
 public class Contact {
@@ -48,12 +50,15 @@ public class Contact {
     }
 
     private boolean validatePhone(String phone) {
-        String phoneRegex = "((\\+[\\d]{0,2})\\s)?"
-                            + "((\\()?\\d{3}(\\))\\s)?"
-                            + "[a-zA-Z0-9]{3}(\\s|-)"
-                            + "[a-zA-Z0-9]{3}(\\s|-)"
-                            + "[a-zA-Z0-9]{2,4}";
-        return phone.matches(phoneRegex);
+        List<String> regexes = new ArrayList<>();
+        regexes.add("\\d+");
+        regexes.add("\\+?\\([a-zA-Z0-9]{2,}\\)");
+        regexes.add("\\+\\d{1,2}(\\s|-)([a-zA-Z0-9]{2,4}(\\s|-)?){1,4}");
+        regexes.add("([a-zA-Z0-9]{2,4}(\\s|-)?){2,4}");
+        regexes.add("((\\([a-zA-Z0-9]{2,4}\\)(\\s|-)?)){1}(([a-zA-Z0-9]){2,4}(\\s|-)?){1,3}");
+        regexes.add("(([a-zA-Z0-9]){2,4}(\\s|-)?){1}((\\([a-zA-Z0-9]{2,4}\\)(\\s|-)?)){1}(([a-zA-Z0-9]){2,4}(\\s|-)?){0,2}");
+
+        return regexes.stream().anyMatch(phone::matches);
     }
 
     @Override

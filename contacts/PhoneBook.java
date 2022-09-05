@@ -43,9 +43,14 @@ public class PhoneBook {
 
     public void removeRecord() {
 
+        if (this.contacts.isEmpty()) {
+            System.out.println("No records to remove!");
+            return;
+        }
+
         this.list();
         int record = this.scanner.nextInt();
-        this.contacts.remove(record);
+        this.contacts.remove(record - 1);
 
         System.out.println("The record removed!");
     }
@@ -55,6 +60,7 @@ public class PhoneBook {
     }
 
     public void edit() {
+
         if (this.contacts.isEmpty()) {
             System.out.println("No records to edit!");
             return;
@@ -63,22 +69,25 @@ public class PhoneBook {
         System.out.println("Select a record:");
         this.list();
         int record = this.scanner.nextInt();
-        System.out.println("Select a field (name, surname, number):");
-        String field = this.scanner.nextLine();
-        System.out.println("Enter " + field + ":");
-        String newValue = this.scanner.nextLine();
+        System.out.print("Select a field (name, surname, number): ");
+        String field = this.scanner.next();
+        System.out.print("Enter " + field + ": ");
+        String newValue = "";
 
         Contact contact = this.contacts.get(record - 1);
 
         switch (field) {
             case "name":
+                newValue = scanner.next();
                 contact.setName(newValue);
                 break;
             case "surname":
+                newValue = scanner.next();
                 contact.setSurname(newValue);
                 break;
             case "number":
                 try {
+                    newValue = scanner.nextLine();
                     contact.setPhoneNumber(newValue);
                 } catch (IllegalArgumentException iae) {
                     System.out.println("Wrong number format!");
