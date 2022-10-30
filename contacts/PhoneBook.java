@@ -3,6 +3,7 @@ package contacts;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
+import java.util.stream.Collectors;
 
 public class PhoneBook {
 
@@ -63,35 +64,72 @@ public class PhoneBook {
         System.out.println("The record added.\n");
     }
 
-    public void removeRecord() {
-
-        if (this.contacts.isEmpty()) {
-            System.out.println("No records to remove!\n");
-            return;
-        }
+    public void listRecords() {
 
         System.out.println(this.list());
-        int record = this.scanner.nextInt();
-        this.contacts.remove(record - 1);
+        System.out.print("[list] Enter action ([number], back): ");
+        String option = this.scanner.nextLine();
 
-        System.out.println("The record removed!\n");
+        if (!"back".equals(option)) {
+            int record = Integer.parseInt(option);
+            this.info(record);
+        }
+    }
+
+    public void search() {
+
+        String option = "again";
+
+        while (!"back".equals(option)) {
+
+            if ("again".equals(option)) {
+                System.out.print("Enter search query: ");
+                String searchQuery = scanner.nextLine();
+
+                List<Contact> queryResults = this.contacts.stream()
+                        .filter(contact -> contact.getWholeName().toLowerCase().matches(searchQuery))
+                        .toList();
+
+                System.out.println("Found " + queryResults.size() + " results:");
+                for (int i = 0; i < queryResults.size(); i++) {
+                    System.out.println((i + 1) + ". " + queryResults.get(i).getWholeName());
+                }
+
+            } else if (option.matches("\\d+")) {
+                int record = Integer.parseInt(option);
+                this.info(record);
+            }
+
+            System.out.print("[search] Enter action ([number], back, again): ");
+            option = scanner.nextLine();
+        }
+
     }
 
     public void count() {
         System.out.println("The Phone Book has " + this.contacts.size() + " records.\n");
     }
 
-    public void edit() {
+    private void removeRecord(int record) {
+
+        if (this.contacts.isEmpty()) {
+            System.out.println("No records to remove!\n");
+            return;
+        }
+
+        this.contacts.remove(record);
+
+        System.out.println("The record removed!\n");
+    }
+
+    private void edit(int record) {
 
         if (this.contacts.isEmpty()) {
             System.out.println("No records to edit!\n");
             return;
         }
 
-        System.out.println(this.list());
-        System.out.print("Select a record: ");
-        int record = Integer.parseInt(this.scanner.nextLine());
-        Contact contact = this.contacts.get(record - 1);
+        Contact contact = this.contacts.get(record);
 
         System.out.printf("Select a field (%s): ", contact.listFields());
         String field = this.scanner.nextLine();
@@ -101,18 +139,29 @@ public class PhoneBook {
         contact.editField(field, newValue);
 
         System.out.println("The record updated!\n");
+        System.out.println(contact);
 
     }
 
-    public void info() {
+    private void info(int record) {
 
-        System.out.println(this.list());
-
-        System.out.print("Enter index to show info: ");
-        int record = this.scanner.nextInt();
         Contact contact = this.contacts.get(record - 1);
         System.out.println(contact.toString() + "\n");
 
+        System.out.print("[record] Enter action (edit, delete, menu): ");
+        String option = scanner.nextLine();
+
+        switch (option) {
+            case "menu":
+                return;
+            case "edit":
+                this.edit(record - 1);
+                break;
+            case "delete":
+                this.removeRecord(record - 1);
+                break;
+            default:
+        }
     }
 
     private String list() {
@@ -123,6 +172,4 @@ public class PhoneBook {
         }
         return sb.toString().trim();
     }
-
-
 }
