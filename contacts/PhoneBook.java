@@ -1,21 +1,32 @@
 package contacts;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
-import java.util.stream.Collectors;
 
 public class PhoneBook {
 
     private final List<Contact> contacts;
     private final Scanner scanner;
+    private final boolean saveToFile;
+    private final String fileName;
 
-    public PhoneBook() {
-        this.contacts = new ArrayList<>();
+    public PhoneBook(String fileName) throws IOException, ClassNotFoundException {
         this.scanner = new Scanner(System.in);
+
+        if (!(fileName == null || fileName.isEmpty())) {
+            this.contacts = (List<Contact>) SerializationUtils.deserialize(fileName);
+            this.saveToFile = true;
+            this.fileName = fileName;
+        } else {
+            this.contacts = new ArrayList<>();
+            this.saveToFile = false;
+            this.fileName = "";
+        }
     }
 
-    public void addRecord() {
+    public void addRecord() throws IOException {
 
         Contact contact;
 
@@ -61,13 +72,16 @@ public class PhoneBook {
 
         this.contacts.add(contact);
 
-        System.out.println("The record added.\n");
+        System.out.println("The record added.");
+        if (this.saveToFile) {
+            SerializationUtils.serialize(this.contacts, fileName);
+        }
     }
 
-    public void listRecords() {
+    public void listRecords() throws IOException {
 
         System.out.println(this.list());
-        System.out.print("[list] Enter action ([number], back): ");
+        System.out.print("\n[list] Enter action ([number], back): ");
         String option = this.scanner.nextLine();
 
         if (!"back".equals(option)) {
@@ -76,7 +90,7 @@ public class PhoneBook {
         }
     }
 
-    public void search() {
+    public void search() throws IOException {
 
         String option = "again";
 
@@ -87,7 +101,7 @@ public class PhoneBook {
                 String searchQuery = scanner.nextLine();
 
                 List<Contact> queryResults = this.contacts.stream()
-                        .filter(contact -> contact.getWholeName().toLowerCase().matches(searchQuery))
+                        .filter(contact -> contact.toString().toLowerCase().contains(searchQuery))
                         .toList();
 
                 System.out.println("Found " + queryResults.size() + " results:");
@@ -98,6 +112,7 @@ public class PhoneBook {
             } else if (option.matches("\\d+")) {
                 int record = Integer.parseInt(option);
                 this.info(record);
+                return;
             }
 
             System.out.print("[search] Enter action ([number], back, again): ");
@@ -110,7 +125,7 @@ public class PhoneBook {
         System.out.println("The Phone Book has " + this.contacts.size() + " records.\n");
     }
 
-    private void removeRecord(int record) {
+    private void removeRecord(int record) throws IOException {
 
         if (this.contacts.isEmpty()) {
             System.out.println("No records to remove!\n");
@@ -120,9 +135,13 @@ public class PhoneBook {
         this.contacts.remove(record);
 
         System.out.println("The record removed!\n");
+
+        if (this.saveToFile) {
+            SerializationUtils.serialize(this.contacts, this.fileName);
+        }
     }
 
-    private void edit(int record) {
+    private void edit(int record) throws IOException {
 
         if (this.contacts.isEmpty()) {
             System.out.println("No records to edit!\n");
@@ -138,12 +157,16 @@ public class PhoneBook {
 
         contact.editField(field, newValue);
 
-        System.out.println("The record updated!\n");
+        System.out.println("Saved");
         System.out.println(contact);
+
+        if (this.saveToFile) {
+            SerializationUtils.serialize(this.contacts, fileName);
+        }
 
     }
 
-    private void info(int record) {
+    private void info(int record) throws IOException {
 
         Contact contact = this.contacts.get(record - 1);
         System.out.println(contact.toString() + "\n");

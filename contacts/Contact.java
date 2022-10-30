@@ -3,8 +3,6 @@ package contacts;
 import java.io.Serial;
 import java.io.Serializable;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Objects;
 
 public abstract class Contact implements Serializable {
@@ -28,25 +26,9 @@ public abstract class Contact implements Serializable {
     public abstract String getWholeName();
 
     public void setPhoneNumber(String newPhone) {
-       //if (!validatePhone(newPhone)) {
-       //    this.phoneNumber = "[no number]";
-       //    throw new IllegalArgumentException("Invalid phone number");
-       //}
 
        this.phoneNumber = newPhone;
        this.lastEdit = LocalDateTime.now();
-    }
-
-    private boolean validatePhone(String phone) {
-        List<String> regexes = new ArrayList<>();
-        regexes.add("\\d+");
-        regexes.add("\\+?\\([a-zA-Z0-9]{2,}\\)");
-        regexes.add("\\+\\d{1,2}(\\s|-)([a-zA-Z0-9]{2,4}(\\s|-)?){1,4}");
-        regexes.add("([a-zA-Z0-9]{2,4}(\\s|-)?){2,4}");
-        regexes.add("((\\([a-zA-Z0-9]{2,4}\\)(\\s|-)?)){1}(([a-zA-Z0-9]){2,4}(\\s|-)?){1,3}");
-        regexes.add("(([a-zA-Z0-9]){2,4}(\\s|-)?){1}((\\([a-zA-Z0-9]{2,4}\\)(\\s|-)?)){1}(([a-zA-Z0-9]){2,4}(\\s|-)?){0,2}");
-
-        return regexes.stream().anyMatch(phone::matches);
     }
 
     @Override
