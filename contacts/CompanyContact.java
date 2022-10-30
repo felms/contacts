@@ -9,7 +9,7 @@ public class CompanyContact extends Contact{
     private String address;
 
     public CompanyContact(String organizationName, String address, String phoneNumber) {
-        super(phoneNumber, false);
+        super(phoneNumber);
         this.organizationName = organizationName;
         this.address = address;
     }
@@ -23,13 +23,39 @@ public class CompanyContact extends Contact{
         this.lastEdit = LocalDateTime.now();
     }
 
-    public String getAddress() {
-        return address;
-    }
-
     public void setAddress(String address) {
         this.address = address;
         this.lastEdit = LocalDateTime.now();
+    }
+
+    @Override
+    public String listFields() {
+        return "name, address, number";
+    }
+
+    @Override
+    public void editField(String fieldName, String newValue) {
+
+        switch (fieldName) {
+            case "name":
+                this.setOrganizationName(newValue);
+                break;
+            case "address":
+                this.setAddress(newValue);
+                break;
+            case "number":
+                try {
+                    this.setPhoneNumber(newValue);
+                } catch (IllegalArgumentException iae) {
+                    System.out.print("Wrong number format!");
+                }
+                break;
+        }
+    }
+
+    @Override
+    public String getWholeName() {
+        return this.getOrganizationName();
     }
 
     @Override
@@ -37,7 +63,7 @@ public class CompanyContact extends Contact{
         return "Organization name: " + this.organizationName
                 + "\nAddress: " + this.address
                 + "\nNumber: " + this.phoneNumber
-                + "\nTime created: " + this.dateCreated.format(DateTimeFormatter.ISO_DATE_TIME).toString()
-                + "\nTime last edit: " + this.lastEdit.format(DateTimeFormatter.ISO_DATE_TIME).toString();
+                + "\nTime created: " + this.dateCreated.format(DateTimeFormatter.ISO_DATE_TIME)
+                + "\nTime last edit: " + this.lastEdit.format(DateTimeFormatter.ISO_DATE_TIME);
     }
 }

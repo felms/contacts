@@ -1,28 +1,31 @@
 package contacts;
 
+import java.io.Serial;
+import java.io.Serializable;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
-public abstract class Contact {
+public abstract class Contact implements Serializable {
+
+    @Serial
+    private static final long serialVersionUID = 1L;
 
     protected String phoneNumber;
     protected LocalDateTime dateCreated;
     protected LocalDateTime lastEdit;
-    protected boolean thisIsAPerson;
-
-    public Contact(String phoneNumber, boolean thisIsAPerson) {
+    public Contact(String phoneNumber) {
 
         this.phoneNumber = phoneNumber;
-        this.thisIsAPerson = thisIsAPerson;
         this.dateCreated = LocalDateTime.now();
         this.lastEdit = LocalDateTime.now();
     }
 
-    public String getPhoneNumber() {
-        return phoneNumber;
-    }
+    public abstract String listFields();
+    public abstract void editField(String fieldName, String newValue);
+
+    public abstract String getWholeName();
 
     public void setPhoneNumber(String newPhone) {
        //if (!validatePhone(newPhone)) {
@@ -32,14 +35,6 @@ public abstract class Contact {
 
        this.phoneNumber = newPhone;
        this.lastEdit = LocalDateTime.now();
-    }
-
-    public boolean hasNumber() {
-        return !this.phoneNumber.equals("[no number]");
-    }
-
-    public boolean isPerson() {
-        return this.thisIsAPerson;
     }
 
     private boolean validatePhone(String phone) {

@@ -93,63 +93,12 @@ public class PhoneBook {
         int record = Integer.parseInt(this.scanner.nextLine());
         Contact contact = this.contacts.get(record - 1);
 
-        if (contact.isPerson()) {
-            System.out.print("Select a field (name, surname, , birth, gender, number): ");
-            String field = this.scanner.nextLine();
-            System.out.print("Enter " + field + ": ");
-            String newValue = "";
+        System.out.printf("Select a field (%s): ", contact.listFields());
+        String field = this.scanner.nextLine();
+        System.out.print("Enter " + field + ": ");
+        String newValue = scanner.nextLine();
 
-
-            switch (field) {
-                case "name":
-                    newValue = scanner.nextLine();
-                    ((PersonContact)contact).setName(newValue);
-                    break;
-                case "surname":
-                    newValue = scanner.nextLine();
-                    ((PersonContact)contact).setSurname(newValue);
-                    break;
-                case "birth":
-                    newValue = scanner.nextLine();
-                    ((PersonContact)contact).setBirthDate(newValue);
-                    break;
-                case "gender":
-                    newValue = scanner.nextLine();
-                    ((PersonContact)contact).setGender(newValue);
-                    break;
-                case "number":
-                    try {
-                        newValue = scanner.nextLine();
-                        contact.setPhoneNumber(newValue);
-                    } catch (IllegalArgumentException iae) {
-                        System.out.print("Wrong number format!");
-                    }
-                    break;
-            }
-
-        } else {
-
-            System.out.print("Select a field (address, number): ");
-            String field = this.scanner.nextLine();
-            System.out.print("Enter " + field + ": ");
-            String newValue = "";
-
-
-            switch (field) {
-                case "address":
-                    newValue = scanner.nextLine();
-                    ((CompanyContact)contact).setAddress(newValue);
-                    break;
-                case "number":
-                    try {
-                        newValue = scanner.nextLine();
-                        contact.setPhoneNumber(newValue);
-                    } catch (IllegalArgumentException iae) {
-                        System.out.print("Wrong number format!");
-                    }
-                    break;
-            }
-        }
+        contact.editField(field, newValue);
 
         System.out.println("The record updated!\n");
 
@@ -170,13 +119,7 @@ public class PhoneBook {
         StringBuilder sb = new StringBuilder();
         for (int i = 0; i < this.contacts.size(); i++) {
             Contact c = this.contacts.get(i);
-            String r = "";
-            if (c.isPerson()) {
-                r = (i + 1) + ". " + ((PersonContact)c).getWholeName();
-            } else {
-                r = (i + 1) + ". " + ((CompanyContact)c).getOrganizationName();
-            }
-            sb.append(r).append("\n");
+            sb.append(i + 1).append(". ").append(c.getWholeName()).append("\n");
         }
         return sb.toString().trim();
     }
